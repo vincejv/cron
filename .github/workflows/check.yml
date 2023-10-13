@@ -53,14 +53,15 @@ jobs:
         if: steps.script.outputs.error == 'false'
         run: |
           echo "${{ steps.script.outputs.stdout }}" > cf_ips
-          git config --local user.email "action@github.com"
-          git config --local user.name "github-actions"
           git add --all
-          if [-z "$(git status --porcelain)"]; then
-            echo "PUSH=false" >> $GITHUB_OUTPUT
-          else
-            git commit -m "Update cloudflare ips" -a
-            echo "PUSH=true" >> $GITHUB_OUTPUT
+          if [[ $([ -z "`git status --porcelain`" ] && echo "false" || echo "true") == "true" ]]; then
+            git config --local user.email "action@github.com"
+            git config --local user.name "github-actions"
+            if [-z "$(git status --porcelain)"]; then
+              echo "PUSH=false" >> $GITHUB_OUTPUT
+            else
+              git commit -m "Update cloudflare ips" -a
+            fi
           fi
       - name: Push changes
         if: steps.script.outputs.error == 'false'
