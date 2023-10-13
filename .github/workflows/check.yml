@@ -52,7 +52,7 @@ jobs:
       - name: Print to file
         if: steps.script.outputs.error == 'false'
         run: |
-          echo ${{ steps.script.outputs.stdout }} > cf_ips
+          echo "${{ steps.script.outputs.stdout }}" > cf_ips
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
           git add --all
