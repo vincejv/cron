@@ -1,0 +1,49 @@
+name: Check for new version of Telegraf
+
+# Controls when the workflow will run
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # Checking on workdays
+    - cron: '0 1 * * 1-5'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - uses: jannekem/run-python-script-action@v1
+        id: script
+        with:
+          fail-on-error: false
+          script: |
+            import requests
+            import json
+
+            payload = {}
+            headers = {
+              'content-type': "application/json",
+              'cache-control': "no-cache"
+            }
+
+            url = "https://api.cloudflare.com/client/v4/ips"
+            response = requests.request("GET", url, data=json.dumps(payload), headers=headers)
+
+            #print(type(response.json()))
+            resp = response.json()
+            ipv4_cidrs = resp['result']['ipv4_cidrs']
+            for c in ipv4_cidrs:
+              print(c)
+      - name: Print errors
+        if: steps.script.outputs.error == 'true'
+        run: |
+          printenv "SCRIPT_STDOUT"
+          printenv "SCRIPT_STDERR"
+        env:
+          SCRIPT_STDOUT: ${{ steps.script.outputs.stdout }}
+          SCRIPT_STDERR: ${{ steps.script.outputs.stderr }} 
