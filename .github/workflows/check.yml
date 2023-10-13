@@ -57,10 +57,10 @@ jobs:
           git config --local user.name "github-actions"
           git add --all
           if [-z "$(git status --porcelain)"]; then
-            echo "::set-output name=push::false"
+            echo "PUSH=false" >> $GITHUB_OUTPUT
           else
-            git commit -m "Update `cf_ips`" -a
-            echo "::set-output name=push::true"
+            git commit -m "Update cloudflare ips" -a
+            echo "PUSH=true" >> $GITHUB_OUTPUT
           fi
       - name: Push changes
         if: steps.script.outputs.error == 'false'
