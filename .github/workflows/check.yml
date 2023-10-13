@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.x'
           cache: 'pip' # caching pip dependencies
-      - run: pip install requests json
+      - run: pip install requests
       - uses: jannekem/run-python-script-action@v1
         id: script
         with:
@@ -49,3 +49,21 @@ jobs:
         env:
           SCRIPT_STDOUT: ${{ steps.script.outputs.stdout }}
           SCRIPT_STDERR: ${{ steps.script.outputs.stderr }} 
+      - name: Print to file
+        if: steps.script.outputs.error == 'false'
+        run: |
+          echo ${{ steps.script.outputs.stdout }} > cf_ips
+          git config --local user.email "action@github.com"
+          git config --local user.name "github-actions"
+          git add --all
+          if [-z "$(git status --porcelain)"]; then
+            echo "::set-output name=push::false"
+          else
+            git commit -m "Update `cf_ips`" -a
+            echo "::set-output name=push::true"
+          fi
+      - name: Push changes
+        if: steps.script.outputs.error == 'false'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
