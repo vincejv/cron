@@ -1,4 +1,4 @@
-name: Check for new version of Telegraf
+name: Pull cloudflare ip blocks
 
 # Controls when the workflow will run
 on:
