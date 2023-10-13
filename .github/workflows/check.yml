@@ -3,12 +3,9 @@ name: Pull cloudflare ip blocks
 # Controls when the workflow will run
 on:
   schedule:
-    # * is a special character in YAML so you have to quote this string
-    # Checking on workdays
-    - cron: '0 1 * * 1-5'
+    - cron: '20 3 * * *'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
